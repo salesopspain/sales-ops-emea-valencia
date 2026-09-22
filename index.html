@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Lunch &amp; Dinner Sales Operations EMEA Workshop_Valencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #F4F7FB;
+    --surface: #FFFFFF;
+    --ink: #14233A;
+    --muted: #5A6A82;
+    --line: #DCE3EE;
+    --blue: #1D4F91;
+    --blue-soft: #E3ECF8;
+    --citrus: #E07B12;
+    --chip-on-ink: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0F1622;
+      --surface: #172131;
+      --ink: #E8EEF7;
+      --muted: #97A6BD;
+      --line: #26344A;
+      --blue: #7FAEEB;
+      --blue-soft: #1D2D45;
+      --citrus: #F3A04A;
+      --chip-on-ink: #0F1622;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0F1622;
+    --surface: #172131;
+    --ink: #E8EEF7;
+    --muted: #97A6BD;
+    --line: #26344A;
+    --blue: #7FAEEB;
+    --blue-soft: #1D2D45;
+    --citrus: #F3A04A;
+    --chip-on-ink: #0F1622;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 48px 64px;
+  }
+  header { display: grid; gap: 10px; margin-bottom: 28px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--citrus);
+  }
+  h1 {
+    font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+    font-weight: 800; font-size: clamp(32px, 6vw, 48px); line-height: 1.05;
+    letter-spacing: -.02em; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); margin: 0; max-width: 60ch; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .chip {
+    font: inherit; font-size: 14px; font-weight: 500;
+    padding: 6px 14px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    transition: background .15s, border-color .15s;
+  }
+  .chip:hover { border-color: var(--blue); }
+  .chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: var(--chip-on-ink); }
+  .chip:focus-visible, .go:focus-visible { outline: 2px solid var(--citrus); outline-offset: 2px; }
+
+  ul.list {
+    list-style: none; margin: 0; padding: 0;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden;
+  }
+  li.item {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
+    padding: 16px 20px; border-top: 1px solid var(--line);
+  }
+  li.item:first-child { border-top: 0; }
+  .name {
+    font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+    font-weight: 600; font-size: 19px; line-height: 1.25; margin: 0 0 4px;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 12.5px; font-weight: 500; color: var(--blue);
+    background: var(--blue-soft); padding: 2px 9px; border-radius: 6px;
+  }
+  .go {
+    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    font-size: 14px; font-weight: 600; text-decoration: none;
+    color: var(--blue); padding: 8px 12px; border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .go:hover { border-color: var(--blue); background: var(--blue-soft); }
+  .go svg { width: 16px; height: 16px; flex: none; }
+  .count { font-size: 13px; color: var(--muted); margin: 14px 2px 0; }
+  footer { margin-top: 32px; font-size: 13px; color: var(--muted); }
+
+  .section-h {
+    font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+    font-weight: 800; font-size: 22px; letter-spacing: -.01em; margin: 0 0 12px;
+  }
+  .dinner { margin-top: 40px; }
+  .dinner-card {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px;
+    padding: 20px; border-radius: 14px;
+    background: var(--surface); border: 1px solid var(--line);
+  }
+  .dinner-time {
+    display: grid; justify-items: center; line-height: 1;
+    padding: 12px 14px; border-radius: 10px; background: var(--blue-soft); color: var(--blue);
+    font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  .dinner-time .time { font-size: 26px; font-weight: 800; }
+  .dinner-time .ampm { font-size: 12px; font-weight: 600; letter-spacing: .1em; margin-top: 4px; }
+  .dinner-label {
+    font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--citrus);
+  }
+  .dinner-name {
+    font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+    font-weight: 800; font-size: 24px; line-height: 1.2; margin: 4px 0 0; text-wrap: balance;
+  }
+  .go-solid { background: var(--blue); border-color: var(--blue); color: var(--chip-on-ink); }
+  .go-solid:hover { background: var(--blue); border-color: var(--blue); opacity: .9; }
+
+  @media (max-width: 600px) {
+    .dinner-card { grid-template-columns: auto 1fr; }
+    .dinner-card .go { grid-column: 1 / -1; justify-self: start; }
+  }
+  @media (max-width: 480px) {
+    li.item { grid-template-columns: 1fr; gap: 10px; padding: 16px; }
+    .go { justify-self: start; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Valencia · Lunch &amp; dinner</span>
+    <h1>Where are we eating?</h1>
+    <p class="lede">For lunch, pick from eight spots a short walk from the venue; dinner is booked (details below). Every location opens straight in Google Maps.</p>
+  </header>
+
+  <h2 class="section-h" id="lunch-h">Lunch options</h2>
+  <div class="filters" id="filters" role="group" aria-label="Filter by cuisine"></div>
+
+  <ul class="list" id="list"></ul>
+  <p class="count" id="count"></p>
+
+  <section class="dinner" aria-labelledby="dinner-h">
+    <h2 class="section-h" id="dinner-h">Dinner</h2>
+    <div class="dinner-card">
+      <div class="dinner-time">
+        <span class="time">24</span>
+        <span class="ampm">SEP</span>
+      </div>
+      <div>
+        <span class="dinner-label">Thursday 24 September · 20:30</span>
+        <p class="dinner-name">Restaurante Sabbia Valencia</p>
+      </div>
+      <a class="go go-solid" href="https://www.google.com/maps/place/Restaurante+Sabbia+Valencia/@39.464346,-0.3256631,17z/data=!3m2!4b1!5s0xd60484219652abf:0x631b907fdfaf0691!4m6!3m5!1s0xd60496118b6636f:0xad92c65be3ee12ed!8m2!3d39.464346!4d-0.3230882!16s%2Fg%2F11ryr6gxm_?entry=ttu&amp;g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>View on Maps</a>
+    </div>
+  </section>
+
+  <footer>Links open a Google Maps search; check opening hours and bookings there.</footer>
+</div>
+
+<script>
+  const places = [
+    { name: "TGN Gastrobar", tags: ["Mediterranean", "Spanish"], q: "TGN+Gastrobar+Valencia" },
+    { name: "La Taula Libanesa", tags: ["Lebanese", "Mediterranean"], q: "La+Taula+Libanesa+Valencia" },
+    { name: "Tony Roma's Aqua", tags: ["American", "Grill"], q: "Tony+Roma%27s+Aqua+Valencia" },
+    { name: "La Piazza Aqua", tags: ["Italian"], q: "La+Piazza+Aqua+Valencia" },
+    { name: "UDON Aqua", tags: ["Asian", "Noodles"], q: "UDON+Aqua+Valencia" },
+    { name: "Burritos Trafalgar", tags: ["Mexican"], q: "Burritos+Trafalgar+Valencia" },
+    { name: "Sushi Yoki Aqua", tags: ["Japanese"], q: "Sushi+Yoki+Aqua+Valencia" },
+    { name: "El Corte Inglés Aqua · Restaurant Area", tags: ["Spanish", "Mediterranean"], q: "El+Corte+Ingles+Aqua+Valencia+Restaurante" }
+  ];
+
+  const pin = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+  const allTags = ["All", ...new Set(places.flatMap(p => p.tags))];
+  let active = "All";
+
+  const filtersEl = document.getElementById("filters");
+  const listEl = document.getElementById("list");
+  const countEl = document.getElementById("count");
+
+  function render() {
+    filtersEl.innerHTML = allTags.map((t, i) =>
+      `<button class="chip" id="f-${i}" aria-pressed="${t === active}" data-tag="${t}">${t}</button>`
+    ).join("");
+    const shown = places.filter(p => active === "All" || p.tags.includes(active));
+    listEl.innerHTML = shown.map(p => `
+      <li class="item">
+        <div>
+          <p class="name">${p.name}</p>
+          <div class="tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+        </div>
+        <a class="go" href="https://www.google.com/maps/search/?api=1&query=${p.q}" target="_blank" rel="noopener">${pin}View on Maps</a>
+      </li>`).join("");
+    countEl.textContent = `${shown.length} of ${places.length} restaurants`;
+  }
+
+  filtersEl.addEventListener("click", e => {
+    const b = e.target.closest("button[data-tag]");
+    if (!b) return;
+    active = b.dataset.tag;
+    render();
+    document.querySelector(`.chip[data-tag="${CSS.escape(active)}"]`)?.focus();
+  });
+
+  render();
+</script>
+</body>
+</html>
