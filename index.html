@@ -117,7 +117,10 @@
     font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
     font-weight: 800; font-size: 22px; letter-spacing: -.01em; margin: 0 0 12px;
   }
-  .dinner { margin-top: 40px; }
+  .block { margin-top: 40px; }
+  .block-first { margin: 0 0 40px; }
+  .dinner-card.no-badge { grid-template-columns: 1fr auto; }
+  .dinner-addr { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
   .dinner-card {
     display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px;
     padding: 20px; border-radius: 14px;
@@ -144,6 +147,7 @@
 
   @media (max-width: 600px) {
     .dinner-card { grid-template-columns: auto 1fr; }
+    .dinner-card.no-badge { grid-template-columns: 1fr; }
     .dinner-card .go { grid-column: 1 / -1; justify-self: start; }
   }
   @media (max-width: 480px) {
@@ -157,10 +161,21 @@
 
 <div class="wrap">
   <header>
-    <span class="eyebrow">Valencia · Lunch &amp; dinner</span>
-    <h1>Where are we eating?</h1>
-    <p class="lede">For lunch, pick from eight spots a short walk from the venue; dinner is booked (details below). Every location opens straight in Google Maps.</p>
+    <span class="eyebrow">Valencia · Sales Operations EMEA Workshop</span>
+    <h1>Where to be, where to eat</h1>
+    <p class="lede">The workshop venue, eight lunch spots a short walk from it, the team building location and the group dinner. Every location opens straight in Google Maps.</p>
   </header>
+
+  <section class="block block-first" aria-labelledby="venue-h">
+    <h2 class="section-h" id="venue-h">Workshop venue</h2>
+    <div class="dinner-card no-badge">
+      <div>
+        <span class="dinner-label">Both workshop days · Meeting room</span>
+        <p class="dinner-name">Ilunion Aqua 3 Valencia</p>
+      </div>
+      <a class="go go-solid" href="https://maps.app.goo.gl/12y3sZ162JjusjKT8" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>View on Maps</a>
+    </div>
+  </section>
 
   <h2 class="section-h" id="lunch-h">Lunch options</h2>
   <div class="filters" id="filters" role="group" aria-label="Filter by cuisine"></div>
@@ -168,7 +183,19 @@
   <ul class="list" id="list"></ul>
   <p class="count" id="count"></p>
 
-  <section class="dinner" aria-labelledby="dinner-h">
+  <section class="block" aria-labelledby="team-h">
+    <h2 class="section-h" id="team-h">Team building</h2>
+    <div class="dinner-card no-badge">
+      <div>
+        <span class="dinner-label">Activity location</span>
+        <p class="dinner-name">C/ del Músic Hipòlit Martínez, 11</p>
+        <p class="dinner-addr">Benimaclet, 46020 València</p>
+      </div>
+      <a class="go go-solid" href="https://www.google.com/maps/search/?api=1&amp;query=C%2F+del+M%C3%BAsic+Hip%C3%B2lit+Mart%C3%ADnez%2C+11%2C+46020+Val%C3%A8ncia" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>View on Maps</a>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="dinner-h">
     <h2 class="section-h" id="dinner-h">Dinner</h2>
     <div class="dinner-card">
       <div class="dinner-time">
