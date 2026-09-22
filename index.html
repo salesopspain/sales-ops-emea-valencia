@@ -120,6 +120,28 @@
   .block { margin-top: 40px; }
   .block-first { margin: 0 0 40px; }
   .dinner-card.no-badge { grid-template-columns: 1fr auto; }
+  .dinner-addr strong { color: var(--ink); font-weight: 600; }
+
+  .lunch {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  }
+  .lunch summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 18px 20px; cursor: pointer; list-style: none; border-radius: 14px;
+  }
+  .lunch summary::-webkit-details-marker { display: none; }
+  .lunch summary:hover .chev { background: var(--blue-soft); }
+  .lunch summary:focus-visible { outline: 2px solid var(--citrus); outline-offset: 2px; }
+  .sum-text { display: grid; gap: 2px; }
+  .lunch summary .section-h { margin: 0; }
+  .sum-meta { font-size: 14px; color: var(--muted); }
+  .chev {
+    width: 32px; height: 32px; padding: 6px; flex: none; border-radius: 8px;
+    color: var(--blue); border: 1px solid var(--line); transition: transform .2s, background .15s;
+  }
+  .lunch[open] .chev { transform: rotate(180deg); }
+  .lunch-body { padding: 0 20px 20px; }
+  .lunch .list { border-radius: 10px; }
   .dinner-addr { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
   .dinner-card {
     display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px;
@@ -163,25 +185,54 @@
   <header>
     <span class="eyebrow">Valencia · Sales Operations EMEA Workshop</span>
     <h1>Where to be, where to eat</h1>
-    <p class="lede">The workshop venue, eight lunch spots a short walk from it, the team building location and the group dinner. Every location opens straight in Google Maps.</p>
+    <p class="lede">The workshop venue, lunch spots a short walk from it, the group dinner and the team building activity. Every location opens straight in Google Maps.</p>
   </header>
 
-  <section class="block block-first" aria-labelledby="venue-h">
+  <section class="block-first" aria-labelledby="venue-h">
     <h2 class="section-h" id="venue-h">Workshop venue</h2>
-    <div class="dinner-card no-badge">
+    <div class="dinner-card">
+      <div class="dinner-time">
+        <span class="time">8:55</span>
+        <span class="ampm">AM</span>
+      </div>
       <div>
         <span class="dinner-label">Thu 24 &amp; Fri 25 September · Meeting room</span>
         <p class="dinner-name">Ilunion Aqua 3 Valencia</p>
+        <p class="dinner-addr">Please be there by <strong>8:55 AM at the latest</strong>, both days.</p>
       </div>
       <a class="go go-solid" href="https://maps.app.goo.gl/12y3sZ162JjusjKT8" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>View on Maps</a>
     </div>
   </section>
 
-  <h2 class="section-h" id="lunch-h">Lunch options</h2>
-  <div class="filters" id="filters" role="group" aria-label="Filter by cuisine"></div>
+  <details class="lunch" id="lunch">
+    <summary>
+      <span class="sum-text">
+        <span class="section-h" id="lunch-h">Lunch options</span>
+        <span class="sum-meta">8 spots a short walk from the venue</span>
+      </span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </summary>
+    <div class="lunch-body">
+      <div class="filters" id="filters" role="group" aria-label="Filter by cuisine"></div>
+      <ul class="list" id="list"></ul>
+      <p class="count" id="count"></p>
+    </div>
+  </details>
 
-  <ul class="list" id="list"></ul>
-  <p class="count" id="count"></p>
+  <section class="block" aria-labelledby="dinner-h">
+    <h2 class="section-h" id="dinner-h">Dinner</h2>
+    <div class="dinner-card">
+      <div class="dinner-time">
+        <span class="time">24</span>
+        <span class="ampm">SEP</span>
+      </div>
+      <div>
+        <span class="dinner-label">Thursday 24 September · 20:30</span>
+        <p class="dinner-name">Restaurante Sabbia Valencia</p>
+      </div>
+      <a class="go go-solid" href="https://www.google.com/maps/place/Restaurante+Sabbia+Valencia/@39.464346,-0.3256631,17z/data=!3m2!4b1!5s0xd60484219652abf:0x631b907fdfaf0691!4m6!3m5!1s0xd60496118b6636f:0xad92c65be3ee12ed!8m2!3d39.464346!4d-0.3230882!16s%2Fg%2F11ryr6gxm_?entry=ttu&amp;g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>View on Maps</a>
+    </div>
+  </section>
 
   <section class="block" aria-labelledby="team-h">
     <h2 class="section-h" id="team-h">Team building</h2>
@@ -199,22 +250,7 @@
     </div>
   </section>
 
-  <section class="block" aria-labelledby="dinner-h">
-    <h2 class="section-h" id="dinner-h">Dinner</h2>
-    <div class="dinner-card">
-      <div class="dinner-time">
-        <span class="time">24</span>
-        <span class="ampm">SEP</span>
-      </div>
-      <div>
-        <span class="dinner-label">Thursday 24 September · 20:30</span>
-        <p class="dinner-name">Restaurante Sabbia Valencia</p>
-      </div>
-      <a class="go go-solid" href="https://www.google.com/maps/place/Restaurante+Sabbia+Valencia/@39.464346,-0.3256631,17z/data=!3m2!4b1!5s0xd60484219652abf:0x631b907fdfaf0691!4m6!3m5!1s0xd60496118b6636f:0xad92c65be3ee12ed!8m2!3d39.464346!4d-0.3230882!16s%2Fg%2F11ryr6gxm_?entry=ttu&amp;g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>View on Maps</a>
-    </div>
-  </section>
-
-  <footer>Links open a Google Maps search; check opening hours and bookings there.</footer>
+  <footer>Links open Google Maps; check opening hours and bookings there.</footer>
 </div>
 
 <script>
