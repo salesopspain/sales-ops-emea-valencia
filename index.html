@@ -543,11 +543,11 @@
     function hide() { box.classList.remove("show"); setTimeout(() => { box.hidden = true; }, 500); }
     function arm(ms) { clearTimeout(timer); timer = setTimeout(() => { if (!hovering) hide(); }, ms); }
     box.addEventListener("mouseenter", () => { hovering = true; clearTimeout(timer); });
-    box.addEventListener("mouseleave", () => { hovering = false; arm(1200); });
+    box.addEventListener("mouseleave", () => { hovering = false; arm(1500); });
     box.addEventListener("focusin", () => { hovering = true; clearTimeout(timer); });
 
     box.hidden = false;
-    setTimeout(() => { box.classList.add("show"); arm(2400); }, 500);
+    setTimeout(() => { box.classList.add("show"); arm(4000); }, 500);
   })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
