@@ -501,7 +501,9 @@
     const workshopDay = date === THU || date === FRI;
 
     let msg = null;
-    if (date > FRI || (date === FRI && mins >= hm("16:00"))) {
+    if (date < THU || (date === THU && mins < hm("07:30"))) {
+      msg = { emoji: "🧳", text: "Be ready, Valencia is waiting for you! ☀️🍊", go: "venue", cta: "See the plan 📋" };
+    } else if (date > FRI || (date === FRI && mins >= hm("16:00"))) {
       msg = { emoji: "🎉", text: "That's a wrap, bye bye! 👋" };
     } else if (date === FRI && inRange("13:00", "16:00")) {
       msg = { emoji: "🧗", text: "Team building time! C/ del Músic Hipòlit Martínez, 11 — come on, don't be late! 🚕", go: "team", cta: "Show me where 📍" };
