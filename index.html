@@ -192,6 +192,34 @@
   .wx-meta { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 13px; color: var(--muted); text-align: right; white-space: nowrap; }
   .wx-meta b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 
+  .nudge {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 1000;
+    display: flex; align-items: center; gap: 12px; width: max-content; max-width: calc(100% - 32px);
+    padding: 14px 18px; border-radius: 16px; background: var(--ink); color: var(--ground);
+    box-shadow: 0 10px 30px rgba(10, 20, 40, .28);
+    transform: translate(-50%, 140%); opacity: 0;
+    transition: transform .45s cubic-bezier(.2, .9, .3, 1.2), opacity .35s;
+  }
+  .nudge[hidden] { display: none; }
+  .nudge.show { transform: translate(-50%, 0); opacity: 1; }
+  .nudge-emoji { font-size: 30px; line-height: 1; flex: none; }
+  .nudge-body { display: grid; gap: 6px; }
+  .nudge-text { font-weight: 600; font-size: 15.5px; line-height: 1.35; }
+  .nudge-go {
+    justify-self: start; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    padding: 5px 12px; border-radius: 999px; border: 0; background: var(--citrus); color: #1A1204;
+  }
+  .nudge-go:focus-visible { outline: 2px solid var(--citrus); outline-offset: 2px; }
+  .spotlight { animation: spotlight 1.6s ease-out 2; border-radius: 14px; }
+  @keyframes spotlight {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--citrus) 70%, transparent); }
+    100% { box-shadow: 0 0 0 16px transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nudge { transition: opacity .2s; transform: translate(-50%, 0); }
+    .spotlight { animation: none; outline: 3px solid var(--citrus); outline-offset: 4px; }
+  }
+
   .map-wrap {
     background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
   }
@@ -303,7 +331,7 @@
     </div>
   </details>
 
-  <section class="block" aria-labelledby="dinner-h">
+  <section class="block" aria-labelledby="dinner-h" id="dinner">
     <h2 class="section-h" id="dinner-h">Dinner</h2>
     <div class="dinner-card">
       <div class="dinner-time">
@@ -318,7 +346,7 @@
     </div>
   </section>
 
-  <section class="block" aria-labelledby="team-h">
+  <section class="block" aria-labelledby="team-h" id="team">
     <h2 class="section-h" id="team-h">Team building</h2>
     <div class="dinner-card">
       <div class="dinner-time">
@@ -348,6 +376,14 @@
   </section>
 
   <footer>Links open Google Maps; check opening hours and bookings there.</footer>
+</div>
+
+<div class="nudge" id="nudge" role="status" aria-live="polite" hidden>
+  <span class="nudge-emoji" id="nudge-emoji"></span>
+  <span class="nudge-body">
+    <span class="nudge-text" id="nudge-text"></span>
+    <button class="nudge-go" id="nudge-go" type="button" hidden></button>
+  </span>
 </div>
 
 <script>
@@ -445,6 +481,71 @@
       const now = new Date().toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
       document.getElementById("wx-src").textContent = "Live forecast for Valencia · updated " + now;
     }).catch(() => {});
+  })();
+</script>
+<script>
+  (function () {
+    // Madrid wall-clock time; ?at=2026-09-24T19:00 previews any moment.
+    const at = new URLSearchParams(location.search).get("at");
+    function madridNow() {
+      if (at) { const [d, t = "00:00"] = at.split("T"); return { date: d, mins: +t.slice(0, 2) * 60 + +t.slice(3, 5) }; }
+      const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+      }).formatToParts(new Date()).map(x => [x.type, x.value]));
+      return { date: `${p.year}-${p.month}-${p.day}`, mins: +p.hour * 60 + +p.minute };
+    }
+    const hm = s => +s.slice(0, 2) * 60 + +s.slice(3);
+    const THU = "2026-09-24", FRI = "2026-09-25";
+    const { date, mins } = madridNow();
+    const inRange = (a, b) => mins >= hm(a) && mins < hm(b);
+    const workshopDay = date === THU || date === FRI;
+
+    let msg = null;
+    if (date > FRI || (date === FRI && mins >= hm("16:00"))) {
+      msg = { emoji: "🎉", text: "That's a wrap, bye bye! 👋" };
+    } else if (date === FRI && inRange("13:00", "16:00")) {
+      msg = { emoji: "🧗", text: "Team building time! C/ del Músic Hipòlit Martínez, 11 — come on, don't be late! 🚕", go: "team", cta: "Show me where 📍" };
+    } else if (date === THU && inRange("18:00", "20:45")) {
+      msg = { emoji: "🍽️", text: "Yes, dinner is almost served at Restaurante Sabbia! Hurry up, don't be late 🏃‍♀️", go: "dinner", cta: "Show me where 📍" };
+    } else if (workshopDay && inRange("12:45", "14:00")) {
+      msg = { emoji: "😋", text: "You hungry? Check on these places 👇", go: "lunch", cta: "See lunch spots 🍕" };
+    } else if (workshopDay && inRange("07:30", "08:55")) {
+      msg = { emoji: "🏃", text: "You should be on your way to the venue, hurry up! ⏰", go: "venue", cta: "Show me where 📍" };
+    } else if ((date === THU && inRange("08:55", "18:00")) || (date === FRI && inRange("08:55", "13:00"))) {
+      msg = { emoji: "💼", text: "You should be at the venue — Ilunion Aqua 3 👀", go: "venue", cta: "Show me where 📍" };
+    }
+    if (!msg) return;
+
+    const box = document.getElementById("nudge");
+    document.getElementById("nudge-emoji").textContent = msg.emoji;
+    document.getElementById("nudge-text").textContent = msg.text;
+    const btn = document.getElementById("nudge-go");
+    function spotlight() {
+      const el = document.getElementById(msg.go);
+      if (!el) return;
+      if (el.tagName === "DETAILS") el.open = true;
+      const card = el.querySelector(".dinner-card") || el;
+      card.classList.remove("spotlight"); void card.offsetWidth; card.classList.add("spotlight");
+      el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+    }
+    if (msg.go) {
+      btn.textContent = msg.cta; btn.hidden = false;
+      btn.addEventListener("click", () => { spotlight(); hide(); });
+      const el = document.getElementById(msg.go);
+      const card = el && (el.querySelector(".dinner-card") || el);
+      if (card) setTimeout(() => card.classList.add("spotlight"), 600);
+      if (el && el.tagName === "DETAILS") el.open = true;
+    }
+
+    let timer, hovering = false;
+    function hide() { box.classList.remove("show"); setTimeout(() => { box.hidden = true; }, 500); }
+    function arm(ms) { clearTimeout(timer); timer = setTimeout(() => { if (!hovering) hide(); }, ms); }
+    box.addEventListener("mouseenter", () => { hovering = true; clearTimeout(timer); });
+    box.addEventListener("mouseleave", () => { hovering = false; arm(1200); });
+    box.addEventListener("focusin", () => { hovering = true; clearTimeout(timer); });
+
+    box.hidden = false;
+    setTimeout(() => { box.classList.add("show"); arm(2400); }, 500);
   })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
