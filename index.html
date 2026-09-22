@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root {
     --ground: #F4F7FB;
@@ -19,6 +20,8 @@
     --blue-soft: #E3ECF8;
     --citrus: #E07B12;
     --chip-on-ink: #FFFFFF;
+    --green: #1F7A5A;
+    --map-ring: #FFFFFF;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -31,6 +34,8 @@
       --blue-soft: #1D2D45;
       --citrus: #F3A04A;
       --chip-on-ink: #0F1622;
+      --green: #4FC39A;
+      --map-ring: #172131;
     }
   }
   :root[data-theme="dark"] {
@@ -43,6 +48,8 @@
     --blue-soft: #1D2D45;
     --citrus: #F3A04A;
     --chip-on-ink: #0F1622;
+    --green: #4FC39A;
+    --map-ring: #172131;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -167,7 +174,33 @@
   .go-solid { background: var(--blue); border-color: var(--blue); color: var(--chip-on-ink); }
   .go-solid:hover { background: var(--blue); border-color: var(--blue); opacity: .9; }
 
+  .map-wrap {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  }
+  #map { height: 340px; width: 100%; background: var(--blue-soft); z-index: 0; }
+  .legend {
+    list-style: none; margin: 0; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px 18px;
+    font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--line);
+  }
+  .legend li { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .dot-sm { width: 9px; height: 9px; }
+  .pin {
+    display: block; width: 100%; height: 100%; border-radius: 50%;
+    border: 3px solid var(--map-ring); box-shadow: 0 1px 4px rgba(10, 20, 40, .35);
+  }
+  .leaflet-container { font-family: inherit; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); }
+  .leaflet-popup-content { margin: 12px 14px; line-height: 1.4; }
+  .pop-kind { display: block; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+  .pop-name { display: block; font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-weight: 800; font-size: 16px; margin: 2px 0 4px; }
+  .pop-note { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .pop-list { margin: 0 0 8px; padding-left: 18px; font-size: 13px; }
+  .leaflet-container a.pop-go { color: var(--blue); font-weight: 600; font-size: 13px; text-decoration: none; }
+  .leaflet-container a.pop-go:hover { text-decoration: underline; }
+
   @media (max-width: 600px) {
+    #map { height: 280px; }
     .dinner-card { grid-template-columns: auto 1fr; }
     .dinner-card.no-badge { grid-template-columns: 1fr; }
     .dinner-card .go { grid-column: 1 / -1; justify-self: start; }
@@ -185,10 +218,23 @@
   <header>
     <span class="eyebrow">Valencia · Sales Operations EMEA Workshop</span>
     <h1>Where to be, where to eat</h1>
-    <p class="lede">The workshop venue, lunch spots a short walk from it, the group dinner and the team building activity. Every location opens straight in Google Maps.</p>
+    <p class="lede">The workshop venue, lunch spots a short walk from it, the group dinner and the team building activity. Tap a pin on the map, or any button below, to open the location in Google Maps.</p>
   </header>
 
-  <section class="block-first" aria-labelledby="venue-h">
+  <section class="block-first" aria-labelledby="map-h">
+    <h2 class="section-h" id="map-h">Map</h2>
+    <div class="map-wrap">
+      <div id="map" role="region" aria-label="Map of workshop locations in Valencia"></div>
+      <ul class="legend">
+        <li><span class="dot" style="background:var(--blue)"></span>Workshop venue</li>
+        <li><span class="dot dot-sm" style="background:var(--muted)"></span>Lunch</li>
+        <li><span class="dot" style="background:var(--citrus)"></span>Dinner</li>
+        <li><span class="dot" style="background:var(--green)"></span>Team building</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block-first" aria-labelledby="venue-h" id="venue">
     <h2 class="section-h" id="venue-h">Workshop venue</h2>
     <div class="dinner-card">
       <div class="dinner-time">
@@ -298,6 +344,59 @@
   });
 
   render();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  (function () {
+    if (!window.L) return;
+    const css = getComputedStyle(document.documentElement);
+    const color = name => css.getPropertyValue(name).trim();
+    const gmaps = q => "https://www.google.com/maps/search/?api=1&query=" + q;
+
+    const points = [
+      { kind: "Workshop venue", tone: "--blue", size: 22, ll: [39.4560854, -0.3457885],
+        name: "Ilunion Aqua 3 Valencia", note: "Thu 24 &amp; Fri 25 Sep · be there by 8:55 AM",
+        href: "https://maps.app.goo.gl/12y3sZ162JjusjKT8" },
+      { kind: "Dinner", tone: "--citrus", size: 22, ll: [39.464346, -0.3230882],
+        name: "Restaurante Sabbia Valencia", note: "Thursday 24 September · 20:30",
+        href: "https://www.google.com/maps/place/Restaurante+Sabbia+Valencia/@39.464346,-0.3256631,17z/data=!3m2!4b1!5s0xd60484219652abf:0x631b907fdfaf0691!4m6!3m5!1s0xd60496118b6636f:0xad92c65be3ee12ed!8m2!3d39.464346!4d-0.3230882!16s%2Fg%2F11ryr6gxm_?entry=ttu&g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D" },
+      { kind: "Team building", tone: "--green", size: 22, ll: [39.4846124, -0.3545813],
+        name: "C/ del Músic Hipòlit Martínez, 11", note: "Friday 25 September · 14:00 · ~15 min by taxi from the venue",
+        href: gmaps("C%2F+del+M%C3%BAsic+Hip%C3%B2lit+Mart%C3%ADnez%2C+11%2C+46020+Val%C3%A8ncia") },
+      { kind: "Lunch", tone: "--muted", size: 16, ll: [39.456598, -0.3459145],
+        name: "Aqua shopping centre", note: "5 lunch spots inside:",
+        list: ["Tony Roma's Aqua", "La Piazza Aqua", "UDON Aqua", "Sushi Yoki Aqua", "El Corte Inglés Aqua · Restaurant Area"],
+        href: gmaps("Centro+Comercial+Aqua+Valencia") },
+      { kind: "Lunch", tone: "--muted", size: 16, ll: [39.4580344, -0.3465924],
+        name: "Burritos Trafalgar", note: "Mexican",
+        href: gmaps("Burritos+Trafalgar+Valencia") }
+    ];
+
+    const map = L.map("map", { scrollWheelZoom: false, zoomControl: true });
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const markers = points.map(p => {
+      const icon = L.divIcon({
+        className: "", iconSize: [p.size, p.size], iconAnchor: [p.size / 2, p.size / 2], popupAnchor: [0, -p.size / 2],
+        html: `<span class="pin" style="background:${color(p.tone)}"></span>`
+      });
+      const list = p.list ? `<ul class="pop-list">${p.list.map(i => `<li>${i}</li>`).join("")}</ul>` : "";
+      return L.marker(p.ll, { icon, title: p.name, keyboard: true, zIndexOffset: p.kind === "Lunch" ? 0 : 1000 }).addTo(map).bindPopup(
+        `<span class="pop-kind" style="color:${color(p.tone)}">${p.kind}</span>
+         <span class="pop-name">${p.name}</span>
+         <span class="pop-note">${p.note}</span>${list}
+         <a class="pop-go" href="${p.href}" target="_blank" rel="noopener">Open in Google Maps →</a>`
+      );
+    });
+
+    map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [36, 36] });
+    map.on("click focus", () => map.scrollWheelZoom.enable());
+    map.on("mouseout blur", () => map.scrollWheelZoom.disable());
+  })();
 </script>
 </body>
 </html>
